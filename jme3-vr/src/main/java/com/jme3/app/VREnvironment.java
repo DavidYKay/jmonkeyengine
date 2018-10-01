@@ -422,54 +422,40 @@ public class VREnvironment {
     	
     	initialized = false;
     	
-        // we are going to use OpenVR now, not the Oculus Rift
-        // OpenVR does support the Rift
-        String OS     = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-        vrSupportedOS = !OS.contains("nux") && System.getProperty("sun.arch.data.model").equalsIgnoreCase("64"); //for the moment, linux/unix causes crashes, 64-bit only
-        compositorOS  = OS.contains("indows");
-        
-        if( vrSupportedOS) {
-        	if( vrBinding == VRConstants.SETTING_VRAPI_OSVR_VALUE ) {
-        		
-                guiManager   = new VRGuiManager(this);
-                mouseManager = new OpenVRMouseManager(this);
-        		
-                hardware = new OSVR(this);
-                initialized = true;
-                logger.config("Creating OSVR wrapper [SUCCESS]");
-            } else if( vrBinding == VRConstants.SETTING_VRAPI_OPENVR_VALUE ) {
-            	
-                guiManager   = new VRGuiManager(this);
-                mouseManager = new OpenVRMouseManager(this);
+      if( vrBinding == VRConstants.SETTING_VRAPI_OSVR_VALUE ) {
+          guiManager   = new VRGuiManager(this);
+          mouseManager = new OpenVRMouseManager(this);
 
-            	hardware = new OpenVR(this);
-            	initialized = true;
-                logger.config("Creating OpenVR wrapper [SUCCESS]");
-            } else if (vrBinding == VRConstants.SETTING_VRAPI_OCULUSVR_VALUE) {
-            	
-                guiManager   = new VRGuiManager(this);
-                mouseManager = new OculusMouseManager(this);
-            	
-                hardware = new OculusVR(this);
-            	initialized = true;
-            	logger.config("Creating Occulus Rift wrapper [SUCCESS]");
-            } else {
-            	logger.config("Cannot create VR binding: "+vrBinding+" [FAILED]");
-            	logger.log(Level.SEVERE, "Cannot initialize VR environment [FAILED]");
-            }
-        	
-            if( hardware.initialize() ) {
-            	initialized &= true;
-            	logger.config("VR native wrapper initialized [SUCCESS]");
-            } else {
-            	initialized &= false;
-            	logger.warning("VR native wrapper initialized [FAILED]");
-            	logger.log(Level.SEVERE, "Cannot initialize VR environment [FAILED]");
-            }
-        } else {
-        	logger.log(Level.SEVERE, "System does not support VR capabilities.");
-        	logger.log(Level.SEVERE, "Cannot initialize VR environment [FAILED]");
-        }
+          hardware = new OSVR(this);
+          initialized = true;
+          logger.config("Creating OSVR wrapper [SUCCESS]");
+      } else if( vrBinding == VRConstants.SETTING_VRAPI_OPENVR_VALUE ) {
+          guiManager   = new VRGuiManager(this);
+          mouseManager = new OpenVRMouseManager(this);
+
+          hardware = new OpenVR(this);
+          initialized = true;
+          logger.config("Creating OpenVR wrapper [SUCCESS]");
+      } else if (vrBinding == VRConstants.SETTING_VRAPI_OCULUSVR_VALUE) {
+          guiManager   = new VRGuiManager(this);
+          mouseManager = new OculusMouseManager(this);
+
+          hardware = new OculusVR(this);
+          initialized = true;
+          logger.config("Creating Occulus Rift wrapper [SUCCESS]");
+      } else {
+          logger.config("Cannot create VR binding: "+vrBinding+" [FAILED]");
+          logger.log(Level.SEVERE, "Cannot initialize VR environment [FAILED]");
+      }
+
+      if( hardware.initialize() ) {
+          initialized &= true;
+          logger.config("VR native wrapper initialized [SUCCESS]");
+      } else {
+          initialized &= false;
+          logger.warning("VR native wrapper initialized [FAILED]");
+          logger.log(Level.SEVERE, "Cannot initialize VR environment [FAILED]");
+      }
     	
     	return initialized;
     }
